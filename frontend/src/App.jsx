@@ -1,15 +1,31 @@
-import { useEffect, useState } from 'react'
+import { Route, Routes, useLocation } from "react-router-dom";
+import { useStytchMemberSession } from "@stytch/react/b2b";
 
-function App() {
-  const [message, setMessage] = useState('Loading...')
+import { Dashboard } from "./components/Dashboard";
+import { SideNav } from "./components/SideNav";
+import { LogInOrSignUp } from "./components/LogInOrSignUp";
+import { Authenticate } from "./components/Authenticate";
+import { ProtectedRoutes } from "./components/ProtectedRoutes";
 
-  useEffect(() => {
-    fetch('http://localhost:8000/api/hello')
-      .then(res => res.json())
-      .then(data => setMessage(data.message))
-  }, [])
+export const App = () => {
+  const location = useLocation();
+  const { session } = useStytchMemberSession();
+  const showSidebar =
+    session &&
+    ["/dashboard"].includes(location.pathname);
 
-  return <h1>{message}</h1>
-}
-
-export default App
+  return (
+    <div className="app-container">
+      {showSidebar && <SideNav />}
+      <div>
+        <Routes>
+          <Route path="/" element={<LogInOrSignUp />} />
+          <Route path="/authenticate" element={<Authenticate />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </div>
+    </div>
+  );
+};
