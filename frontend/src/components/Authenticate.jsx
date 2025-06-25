@@ -11,7 +11,7 @@ export const Authenticate = () => {
   useEffect(() => {
     if (alreadyLoggedInRef.current === undefined) {
       alreadyLoggedInRef.current = !!session;
-      
+
       if (session) {
         setShouldRedirect(true);
       }
