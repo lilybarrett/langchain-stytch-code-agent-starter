@@ -1,25 +1,22 @@
-import { Route, Routes, useLocation, Navigate } from "react-router-dom";
-import { useStytchMemberSession } from "@stytch/react/b2b";
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { useStytchMemberSession } from '@stytch/react/b2b';
 
-import { Dashboard } from "./components/Dashboard";
-import { SideNav } from "./components/SideNav";
-import { Authenticate } from "./components/Authenticate";
-import { ProtectedRoutes } from "./components/ProtectedRoutes";
-import "./App.css";
+import { Dashboard } from './components/Dashboard';
+import { SideNav } from './components/SideNav';
+import { Authenticate } from './components/Authenticate';
+import { ProtectedRoutes } from './components/ProtectedRoutes';
+import { Members } from './components/Members';
+import { Settings } from './components/Settings';
+import './App.css';
 
 export const App = () => {
   const location = useLocation();
   const { session } = useStytchMemberSession();
-  const showSidebar = session && ["/dashboard"].includes(location.pathname);
+  const showSidebar =
+    session && ['/dashboard', '/members', '/settings'].includes(location.pathname);
 
   return (
-    <div
-      className={
-        showSidebar
-          ? "authenticated-app-container"
-          : "unauthenticated-app-container"
-      }
-    >
+    <div className={showSidebar ? 'authenticated-app-container' : 'unauthenticated-app-container'}>
       {showSidebar && <SideNav />}
       <div>
         <Routes>
@@ -27,6 +24,8 @@ export const App = () => {
           <Route path="/authenticate" element={<Authenticate />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>
       </div>

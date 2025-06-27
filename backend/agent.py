@@ -25,10 +25,11 @@ llm = ChatOpenAI(
     timeout=20,
 )
 
-def prompt(user_input:str) -> str:
+
+def prompt(user_input: str) -> str:
     """
     Constructs a prompt for the LLM to explain a topic in simple terms.
-    
+
     Args:
         userInput (str): The topic to explain.
     Returns:
@@ -38,9 +39,10 @@ def prompt(user_input:str) -> str:
     topic = safe_input.strip()
     if not topic:
         return "Please provide a topic to explain."
-    
+
     # You can customize this prompt/your instructions to the model as needed
     return f"Explain this to me like I'm 5: {topic}"
+
 
 def explain_like_im_five(topic: str) -> str:
     """
@@ -52,7 +54,7 @@ def explain_like_im_five(topic: str) -> str:
     Returns:
         str: A simplified explanation of the topic.
     """
-    
+
     try:
         logger.info(f"Prompting LLM with: {prompt(topic)}")
         response = llm.invoke([HumanMessage(content=prompt(topic))])

@@ -1,23 +1,26 @@
-import { useStytchB2BClient } from "@stytch/react/b2b";
-import { useCallback } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useStytchB2BClient } from '@stytch/react/b2b';
+import { useCallback } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export const SideNav = () => {
   const stytch = useStytchB2BClient();
   const navigate = useNavigate();
   const handleLogout = useCallback(async () => {
     await stytch.session.revoke();
-    navigate("/");
+    navigate('/');
   }, [stytch, navigate]);
 
   return (
     <nav className="sidebar">
       <div className="nav-links">
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) => (isActive ? "active-link" : "")}
-        >
+        <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'active-link' : '')}>
           Home
+        </NavLink>
+        <NavLink to="/members" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+          Members
+        </NavLink>
+        <NavLink to="/settings" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+          Settings
         </NavLink>
       </div>
       <div className="logout-link" onClick={handleLogout}>

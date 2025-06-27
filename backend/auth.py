@@ -5,13 +5,15 @@ from cachetools import TTLCache
 from stytch import B2BClient
 from stytch.core.response_base import StytchError
 
- # --- Environment Validation ---
+# --- Environment Validation ---
 STYTCH_PROJECT_ID = os.getenv("STYTCH_PROJECT_ID")
 STYTCH_SECRET = os.getenv("STYTCH_SECRET")
 APP_ENV = os.getenv("APP_ENV", "local")
 ENVIRONMENT = "test" if APP_ENV != "production" else "live"
 
-missing_vars = [var for var in ["STYTCH_PROJECT_ID", "STYTCH_SECRET"] if not os.getenv(var)]
+missing_vars = [
+    var for var in ["STYTCH_PROJECT_ID", "STYTCH_SECRET"] if not os.getenv(var)
+]
 if missing_vars:
     raise RuntimeError(f"Missing required env vars: {', '.join(missing_vars)}")
 
@@ -28,6 +30,7 @@ client = B2BClient(
 
 # --- In-Memory Token Cache ---
 token_cache = TTLCache(maxsize=500, ttl=300)
+
 
 # --- Token Verifier ---
 def verify_session_token(token: str) -> dict:

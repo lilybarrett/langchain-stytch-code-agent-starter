@@ -1,6 +1,7 @@
 import re
 import html
 
+
 def sanitize_string(text: str) -> str:
     """
     Cleans a string by escaping HTML and removing control characters.

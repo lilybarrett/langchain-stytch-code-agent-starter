@@ -1,28 +1,27 @@
-import { useState } from "react";
-import "./form.css";
+import { useState } from 'react';
+import './form.css';
 
 export const ExplainForm = ({ sessionToken }) => {
-  const [topic, setTopic] = useState("");
-  const [response, setResponse] = useState("");
+  const [topic, setTopic] = useState('');
+  const [response, setResponse] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const baseUrl =
-        import.meta.env.VITE_REACT_APP_BASE_URL || "http://localhost:8000";
+      const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:8000';
       const res = await fetch(`${baseUrl}/explain`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionToken}`,
         },
         body: JSON.stringify({ topic }),
       });
       const data = await res.json();
-      setResponse(data.response || "No response");
+      setResponse(data.response || 'No response');
     } catch (err) {
       console.error(err);
-      setResponse("Error: Could not fetch explanation.");
+      setResponse('Error: Could not fetch explanation.');
     }
   };
 

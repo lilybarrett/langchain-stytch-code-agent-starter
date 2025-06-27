@@ -1,7 +1,6 @@
-
-import { useStytchMemberSession } from "@stytch/react/b2b";
-import { Navigate } from "react-router-dom";
-import { LogInOrSignUp } from "./LogInOrSignUp";
+import { useStytchMemberSession } from '@stytch/react/b2b';
+import { Navigate } from 'react-router-dom';
+import { LogInOrSignUp } from './LogInOrSignUp';
 
 export const Authenticate = () => {
   const { session } = useStytchMemberSession();

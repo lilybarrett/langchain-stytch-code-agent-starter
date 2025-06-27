@@ -1,19 +1,19 @@
-import "./index.css";
-import { StytchB2BProvider } from "@stytch/react/b2b";
-import { StytchB2BUIClient } from "@stytch/vanilla-js/b2b";
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { App } from "./App.jsx";
-import { BrowserRouter as Router } from "react-router-dom";
+import './index.css';
+import { StytchB2BProvider } from '@stytch/react/b2b';
+import { StytchB2BUIClient } from '@stytch/vanilla-js/b2b';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { App } from './App.jsx';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 // optional object for configuring SDK cookie behavior, currently showing defaults
 const stytchOptions = {
   cookieOptions: {
-    opaqueTokenCookieName: "stytch_session",
-    jwtCookieName: "stytch_session_jwt",
-    path: "",
+    opaqueTokenCookieName: 'stytch_session',
+    jwtCookieName: 'stytch_session_jwt',
+    path: '',
     availableToSubdomains: false,
-    domain: "",
+    domain: '',
   },
 };
 
@@ -22,7 +22,7 @@ const stytch = new StytchB2BUIClient(
   stytchOptions
 );
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
