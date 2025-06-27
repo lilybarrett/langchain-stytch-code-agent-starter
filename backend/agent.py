@@ -4,6 +4,7 @@ import os
 import logging
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
+from utils import sanitize_string
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,7 +25,7 @@ llm = ChatOpenAI(
     timeout=20,
 )
 
-def prompt(userInput:str) -> str:
+def prompt(user_input:str) -> str:
     """
     Constructs a prompt for the LLM to explain a topic in simple terms.
     
@@ -33,7 +34,8 @@ def prompt(userInput:str) -> str:
     Returns:
         str: The formatted prompt for the LLM.
     """
-    topic = userInput.strip()
+    safe_input = sanitize_string(user_input)
+    topic = safe_input.strip()
     if not topic:
         return "Please provide a topic to explain."
     
@@ -53,9 +55,9 @@ def explain_like_im_five(topic: str) -> str:
     
     try:
         logger.info(f"Prompting LLM with: {prompt(topic)}")
-        # response = llm.invoke([HumanMessage(content=prompt)])
         response = llm.invoke([HumanMessage(content=prompt(topic))])
-        return response.content
+        safe_output = sanitize_string(response.content)
+        return safe_output
     except Exception as e:
         logger.error("LLM error: %s", e)
         return "Sorry, I'm out of brain juice right now! Try again later."
