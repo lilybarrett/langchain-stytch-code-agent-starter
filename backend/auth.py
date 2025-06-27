@@ -5,11 +5,7 @@ from cachetools import TTLCache
 from stytch import B2BClient
 from stytch.core.response_base import StytchError
 
-# --- Logger Setup ---
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
-# --- Environment Validation ---
+ # --- Environment Validation ---
 STYTCH_PROJECT_ID = os.getenv("STYTCH_PROJECT_ID")
 STYTCH_SECRET = os.getenv("STYTCH_SECRET")
 APP_ENV = os.getenv("APP_ENV", "local")
@@ -18,6 +14,10 @@ ENVIRONMENT = "test" if APP_ENV != "production" else "live"
 missing_vars = [var for var in ["STYTCH_PROJECT_ID", "STYTCH_SECRET"] if not os.getenv(var)]
 if missing_vars:
     raise RuntimeError(f"Missing required env vars: {', '.join(missing_vars)}")
+
+# --- Logger Setup ---
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # --- Stytch Client ---
 client = B2BClient(

@@ -9,11 +9,9 @@ from fastapi_limiter.depends import RateLimiter
 
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
-
+import redis.asyncio as redis
 from agent import explain_like_im_five
 from auth import verify_session_token
-
-import redis.asyncio as redis
 
 # Load environment variables
 ENV_FILE = os.getenv("ENV_FILE", ".env.local")
@@ -44,7 +42,7 @@ async def get_rate_limit_key(request: Request) -> str:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+    redis_url = os.getenv("REDIS_URL")
     redis_client = redis.from_url(redis_url, encoding="utf8", decode_responses=True)
     await FastAPILimiter.init(redis_client, identifier=get_rate_limit_key)
     yield
@@ -55,7 +53,7 @@ app = FastAPI(lifespan=lifespan)
 # CORS settings (adjust as needed)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Add prod domain here if needed
+    allow_origins=[os.getenv("CORS_ORIGINS", "*")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
