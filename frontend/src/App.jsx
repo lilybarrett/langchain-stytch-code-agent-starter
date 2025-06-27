@@ -1,9 +1,8 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, Navigate } from "react-router-dom";
 import { useStytchMemberSession } from "@stytch/react/b2b";
 
 import { Dashboard } from "./components/Dashboard";
 import { SideNav } from "./components/SideNav";
-import { LogInOrSignUp } from "./components/LogInOrSignUp";
 import { Authenticate } from "./components/Authenticate";
 import { ProtectedRoutes } from "./components/ProtectedRoutes";
 import "./App.css";
@@ -24,7 +23,7 @@ export const App = () => {
       {showSidebar && <SideNav />}
       <div>
         <Routes>
-          <Route path="/" element={<LogInOrSignUp />} />
+          <Route path="/" element={<Navigate to="/authenticate" replace />} />
           <Route path="/authenticate" element={<Authenticate />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/dashboard" element={<Dashboard />} />
