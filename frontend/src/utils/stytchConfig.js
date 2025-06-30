@@ -1,9 +1,5 @@
-import { AdminPortalB2BProducts } from "@stytch/react/b2b/adminPortal";
-import {
-  AuthFlowType,
-  B2BProducts,
-  B2BOAuthProviders,
-} from "@stytch/vanilla-js";
+import { AdminPortalB2BProducts } from '@stytch/react/b2b/adminPortal';
+import { AuthFlowType, B2BProducts, B2BOAuthProviders } from '@stytch/vanilla-js';
 
 export const adminPortalConfig = {
   allowedAuthMethods: [
@@ -12,19 +8,19 @@ export const adminPortalConfig = {
     AdminPortalB2BProducts.oauthGoogle,
   ],
   getRoleDescription: (role) => {
-    if (role.role_id == "stytch_admin") {
-      return "Able to manage settings and members";
-    } else if (role.role_id == "stytch_member") {
-      return "Able to view settings and members, but cannot edit";
+    if (role.role_id == 'stytch_admin') {
+      return 'Able to manage settings, members, and search topics';
+    } else if (role.role_id == 'stytch_member') {
+      return 'Able to view settings, members, and recent search topics, but cannot search topics of their own or add new members';
     } else {
       return role.description;
     }
   },
   getRoleDisplayName: (role) => {
-    if (role.role_id == "stytch_admin") {
-      return "Admin";
-    } else if (role.role_id == "stytch_member") {
-      return "Member";
+    if (role.role_id == 'stytch_admin') {
+      return 'Admin';
+    } else if (role.role_id == 'stytch_member') {
+      return 'Member';
     } else {
       return role.role_id;
     }
@@ -41,12 +37,12 @@ export const discoveryConfig = {
 };
 
 export const adminPortalStyles = {
-  fontFamily: "IBM Plex Sans",
+  fontFamily: 'IBM Plex Sans',
 };
 
 export const discoveryStyles = {
-  fontFamily: "IBM Plex Sans",
+  fontFamily: 'IBM Plex Sans',
   container: {
-    width: "500px",
+    width: '500px',
   },
 };

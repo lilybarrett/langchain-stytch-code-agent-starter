@@ -56,3 +56,16 @@ button:hover {
   color: #1e293b;
   min-height: 3rem;
 }
+
+/* disabled styling */
+button:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+input[type="text"]:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  outline: none;
+  border-color: #d1d5db;
+}

@@ -5,7 +5,6 @@ from cachetools import TTLCache
 from stytch import B2BClient
 from stytch.core.response_base import StytchError
 
-# --- Environment Validation ---
 STYTCH_PROJECT_ID = os.getenv("STYTCH_PROJECT_ID")
 STYTCH_SECRET = os.getenv("STYTCH_SECRET")
 APP_ENV = os.getenv("APP_ENV", "local")
@@ -17,47 +16,31 @@ missing_vars = [
 if missing_vars:
     raise RuntimeError(f"Missing required env vars: {', '.join(missing_vars)}")
 
-# --- Logger Setup ---
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# --- Stytch Client ---
 client = B2BClient(
     project_id=STYTCH_PROJECT_ID,
     secret=STYTCH_SECRET,
     environment=ENVIRONMENT,
 )
 
-# --- In-Memory Token Cache ---
 token_cache = TTLCache(maxsize=500, ttl=300)
 
 
-# --- Token Verifier ---
-def verify_session_token(token: str) -> dict:
-    """
-    Verifies a session token with Stytch and caches the result.
+def verify_session_token(token: str, auth_check=None) -> dict:
+    options = {}
 
-    Args:
-        token (str): The session token.
-
-    Returns:
-        dict: Member and org data from Stytch.
-
-    Raises:
-        HTTPException: If the token is invalid or verification fails.
-    """
     if token in token_cache:
-        logger.info("✅ Token cache hit")
         return token_cache[token]
 
-    logger.info("🔍 Verifying session token with Stytch")
+    options["session_token"] = token
+    if auth_check:
+        options["auth_check"] = auth_check
 
     try:
-        response = client.sessions.authenticate(session_token=token)
+        response = client.sessions.authenticate(**options)
         token_cache[token] = response
-        logger.info("✅ Token verified successfully")
-        # print response for debugging
-        logger.debug(f"Stytch response: {response}")
         return response
     except StytchError as e:
         logger.error(f"❌ Stytch API error: {e}")

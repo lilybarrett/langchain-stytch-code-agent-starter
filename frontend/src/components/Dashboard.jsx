@@ -1,7 +1,7 @@
 import { useStytchMemberSession, useStytchOrganization } from '@stytch/react/b2b';
 import { useStytchB2BClient } from '@stytch/react/b2b';
 import { useEffect, useState } from 'react';
-import { ExplainForm } from './ExplainForm';
+import ExplainForm from './ExplainForm';
 import { useRecentTopics } from '../utils/useRecentTopics';
 
 export const Dashboard = () => {
@@ -9,10 +9,9 @@ export const Dashboard = () => {
   const { organization } = useStytchOrganization();
   const stytch = useStytchB2BClient();
   const [sessionTokens, setSessionTokens] = useState({});
-  const [topics, setTopics] = useState([]);
-  const { recentTopics, addTopic } = useRecentTopics();
+  const { recentTopics, setRecentTopics, addTopic } = useRecentTopics([]);
+  const isAuthorizedToViewRecentTopics = stytch.rbac.isAuthorizedSync('explain.topic', 'read');
 
-  // Callback to retrieve session tokens on demand
   const handleGetTokens = () => {
     const tokens = stytch.session.getTokens();
     setSessionTokens(tokens);
@@ -27,24 +26,25 @@ export const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (sessionTokens?.session_token) {
-      // Fetch topics from the backend or cache
-      const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:8000';
-      fetch(`${baseUrl}/cached-topics`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${sessionTokens.session_token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log({ data });
-          setTopics(recentTopics.length > 0 ? recentTopics : data.topics || []);
-        })
-        .catch((error) => {
-          console.error('Error fetching topics:', error);
-        });
+    if (!sessionTokens?.session_token) {
+      console.warn('Session token not ready, skipping fetch');
+      return;
     }
+    const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:8000';
+    fetch(`${baseUrl}/cached-topics`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionTokens.session_token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log({ data });
+        setRecentTopics(recentTopics.length > 0 ? recentTopics : data.topics);
+      })
+      .catch((error) => {
+        console.error('Error fetching topics:', error);
+      });
   }, [sessionTokens]);
 
   return (
@@ -59,18 +59,20 @@ export const Dashboard = () => {
         </div>
       </div>
       <ExplainForm sessionToken={sessionTokens?.session_token} addTopic={addTopic} />
-      <div className="topics-list">
-        <h2>Organization members' last 5 topics</h2>
-        {recentTopics.length > 0 ? (
-          <ul>
-            {recentTopics.map((topic, index) => (
-              <li key={index}>{topic}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No recent topics searched</p>
-        )}
-      </div>
+      {isAuthorizedToViewRecentTopics && (
+        <div className="topics-list">
+          <h2>Organization members' last 5 topics</h2>
+          {recentTopics?.length > 0 ? (
+            <ul>
+              {recentTopics.map((topic, index) => (
+                <li key={index}>{topic}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No recent topics searched</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

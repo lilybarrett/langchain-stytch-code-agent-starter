@@ -1,5 +1,4 @@
 import re
-import html
 import redis.asyncio as redis
 import os
 
@@ -12,13 +11,6 @@ def redis_client() -> redis.Redis:
 
 
 async def store_topic_in_cache(topic: str) -> None:
-    """
-    Stores a topic in the Redis cache for an organization.
-
-    Args:
-        topic (str): The topic to store.
-        org_id (str): The organization ID to associate with the topic.
-    """
     if not topic:
         return
 
@@ -31,12 +23,6 @@ async def store_topic_in_cache(topic: str) -> None:
 
 
 def get_cached_topics() -> list:
-    """
-    Retrieves the cached topics for an organization.
-
-    Returns:
-        list: A list of topics stored in the cache.
-    """
     client = redis_client()
     cache_key = f"org:topics"
     topics = client.lrange(cache_key, 0, -1)
@@ -44,15 +30,6 @@ def get_cached_topics() -> list:
 
 
 def sanitize_string(text: str) -> str:
-    """
-    Cleans a string by escaping HTML and removing control characters.
-
-    Args:
-        text (str): The input string to sanitize.
-
-    Returns:
-        str: The sanitized string.
-    """
     if not isinstance(text, str):
         return ""
 
