@@ -2,6 +2,7 @@ import { useStytchMemberSession, useStytchOrganization } from '@stytch/react/b2b
 import { useStytchB2BClient } from '@stytch/react/b2b';
 import { useEffect, useState } from 'react';
 import { ExplainForm } from './ExplainForm';
+import { useRecentTopics } from '../utils/useRecentTopics';
 
 export const Dashboard = () => {
   const { session } = useStytchMemberSession();
@@ -9,6 +10,7 @@ export const Dashboard = () => {
   const stytch = useStytchB2BClient();
   const [sessionTokens, setSessionTokens] = useState({});
   const [topics, setTopics] = useState([]);
+  const { recentTopics, addTopic } = useRecentTopics();
 
   // Callback to retrieve session tokens on demand
   const handleGetTokens = () => {
@@ -27,14 +29,17 @@ export const Dashboard = () => {
   useEffect(() => {
     if (sessionTokens?.session_token) {
       // Fetch topics from the backend or cache
-      fetch('/cached-topics', {
+      const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:8000';
+      fetch(`${baseUrl}/cached-topics`, {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionTokens.session_token}`,
         },
       })
         .then((response) => response.json())
         .then((data) => {
-          setTopics(data.topics || []);
+          console.log({ data });
+          setTopics(recentTopics.length > 0 ? recentTopics : data.topics || []);
         })
         .catch((error) => {
           console.error('Error fetching topics:', error);
@@ -53,17 +58,17 @@ export const Dashboard = () => {
           </p>
         </div>
       </div>
-      <ExplainForm sessionToken={sessionTokens?.session_token} />
+      <ExplainForm sessionToken={sessionTokens?.session_token} addTopic={addTopic} />
       <div className="topics-list">
-        <h2>Cached Topics</h2>
-        {topics.length > 0 ? (
+        <h2>Organization members' last 5 topics</h2>
+        {recentTopics.length > 0 ? (
           <ul>
-            {topics.map((topic, index) => (
+            {recentTopics.map((topic, index) => (
               <li key={index}>{topic}</li>
             ))}
           </ul>
         ) : (
-          <p>No cached topics available.</p>
+          <p>No recent topics searched</p>
         )}
       </div>
     </div>

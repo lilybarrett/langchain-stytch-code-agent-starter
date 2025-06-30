@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './form.css';
 
-export const ExplainForm = ({ sessionToken }) => {
+export const ExplainForm = ({ sessionToken, addTopic }) => {
   const [topic, setTopic] = useState('');
   const [response, setResponse] = useState('');
 
@@ -17,8 +17,14 @@ export const ExplainForm = ({ sessionToken }) => {
         },
         body: JSON.stringify({ topic }),
       });
+
       const data = await res.json();
-      setResponse(data.response || 'No response');
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to fetch explanation');
+      }
+
+      addTopic(topic);
+      setResponse(data.response);
     } catch (err) {
       console.error(err);
       setResponse('Error: Could not fetch explanation.');

@@ -70,7 +70,7 @@ async def explain(request: ExplainRequest, user_data=Depends(get_current_user)):
     logger.info(f"Received request to explain: {request.topic}")
     logger.debug(f"Verified user: {user_data}")
     logger.info("Calling agent...")
-    response = explain_like_im_five(request.topic)
+    response = await explain_like_im_five(request.topic)
     logger.info("Agent returned response")
     return {"response": response}
 
@@ -85,6 +85,7 @@ async def get_cached_topics():
         os.getenv("REDIS_URL"), encoding="utf8", decode_responses=True
     )
     topics = await client.lrange("org:topics", 0, -1)
+    print(topics)
     if not topics:
         raise HTTPException(status_code=404, detail="No cached topics found")
     return {"topics": topics}

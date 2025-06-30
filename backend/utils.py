@@ -4,7 +4,7 @@ import redis.asyncio as redis
 import os
 
 
-async def redis_client() -> redis.Redis:
+def redis_client() -> redis.Redis:
     redis_url = os.getenv("REDIS_URL")
     if redis_url:
         return redis.from_url(redis_url, encoding="utf8", decode_responses=True)
@@ -25,14 +25,12 @@ async def store_topic_in_cache(topic: str) -> None:
     client = redis_client()
     cache_key = f"org:topics"
     # Use a list to store the last 5 topics
-    client.lpush(cache_key, topic)
-    # Trim the list to the last 5 topics
-    client.ltrim(cache_key, 0, 4)
-    # Optionally set an expiration time for the list (e.g., 1 week)
-    client.expire(cache_key, 604800)
+    await client.lpush(cache_key, topic)
+    await client.ltrim(cache_key, 0, 4)
+    await client.expire(cache_key, 604800)
 
 
-async def get_cached_topics() -> list:
+def get_cached_topics() -> list:
     """
     Retrieves the cached topics for an organization.
 

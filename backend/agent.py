@@ -26,7 +26,7 @@ llm = ChatOpenAI(
 )
 
 
-async def prompt(user_input: str) -> str:
+def prompt(user_input: str) -> str:
     """
     Constructs a prompt for the LLM to explain a topic in simple terms.
 
@@ -41,7 +41,7 @@ async def prompt(user_input: str) -> str:
         return "Please provide a topic to explain."
 
     # Store topic in Redis cache w/ org ID if available
-    await store_topic_in_cache(topic)  # Store for 1 hour
+    # await store_topic_in_cache(topic)  # Store for 1 hour
     # You can customize this prompt/your instructions to the model as needed
     return f"Explain this to me like I'm 5: {topic}"
 
@@ -58,9 +58,19 @@ async def explain_like_im_five(topic: str) -> str:
     """
 
     try:
-        # await logger.info(f"Prompting LLM with: {prompt(topic)}")
-        response = await llm.invoke([HumanMessage(content=prompt(topic))])
+        logger.info(f"Prompting LLM with: {prompt(topic)}")
+        response = await llm.ainvoke([HumanMessage(content=prompt(topic))])
+        logger.debug(f"Raw LLM output: {repr(response.content)}")
         safe_output = sanitize_string(response.content)
+        # Store the topic in cache
+        if safe_output:
+            logger.info(f"Storing topic in cache: {topic}")
+            await store_topic_in_cache(topic)  # Uncomment if using async cache
+        else:
+            logger.warning("LLM returned an empty response, not storing in cache.")
+
+        logger.info(f"LLM response: {safe_output}")
+        # Optionally store the topic in cache
         return safe_output
     except Exception as e:
         logger.error("LLM error: %s", e)
