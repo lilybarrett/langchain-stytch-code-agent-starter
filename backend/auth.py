@@ -56,6 +56,8 @@ def verify_session_token(token: str) -> dict:
         response = client.sessions.authenticate(session_token=token)
         token_cache[token] = response
         logger.info("✅ Token verified successfully")
+        # print response for debugging
+        logger.debug(f"Stytch response: {response}")
         return response
     except StytchError as e:
         logger.error(f"❌ Stytch API error: {e}")

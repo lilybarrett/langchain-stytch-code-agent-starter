@@ -4,7 +4,7 @@ import os
 import logging
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
-from utils import sanitize_string
+from utils import sanitize_string, store_topic_in_cache
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +26,7 @@ llm = ChatOpenAI(
 )
 
 
-def prompt(user_input: str) -> str:
+async def prompt(user_input: str) -> str:
     """
     Constructs a prompt for the LLM to explain a topic in simple terms.
 
@@ -40,11 +40,13 @@ def prompt(user_input: str) -> str:
     if not topic:
         return "Please provide a topic to explain."
 
+    # Store topic in Redis cache w/ org ID if available
+    await store_topic_in_cache(topic)  # Store for 1 hour
     # You can customize this prompt/your instructions to the model as needed
     return f"Explain this to me like I'm 5: {topic}"
 
 
-def explain_like_im_five(topic: str) -> str:
+async def explain_like_im_five(topic: str) -> str:
     """
     Generates a simple explanation for the given topic using an LLM.
 
@@ -56,8 +58,8 @@ def explain_like_im_five(topic: str) -> str:
     """
 
     try:
-        logger.info(f"Prompting LLM with: {prompt(topic)}")
-        response = llm.invoke([HumanMessage(content=prompt(topic))])
+        # await logger.info(f"Prompting LLM with: {prompt(topic)}")
+        response = await llm.invoke([HumanMessage(content=prompt(topic))])
         safe_output = sanitize_string(response.content)
         return safe_output
     except Exception as e:

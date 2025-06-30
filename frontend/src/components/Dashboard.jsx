@@ -8,6 +8,7 @@ export const Dashboard = () => {
   const { organization } = useStytchOrganization();
   const stytch = useStytchB2BClient();
   const [sessionTokens, setSessionTokens] = useState({});
+  const [topics, setTopics] = useState([]);
 
   // Callback to retrieve session tokens on demand
   const handleGetTokens = () => {
@@ -23,6 +24,24 @@ export const Dashboard = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (sessionTokens?.session_token) {
+      // Fetch topics from the backend or cache
+      fetch('/cached-topics', {
+        headers: {
+          Authorization: `Bearer ${sessionTokens.session_token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setTopics(data.topics || []);
+        })
+        .catch((error) => {
+          console.error('Error fetching topics:', error);
+        });
+    }
+  }, [sessionTokens]);
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-content">
@@ -35,6 +54,18 @@ export const Dashboard = () => {
         </div>
       </div>
       <ExplainForm sessionToken={sessionTokens?.session_token} />
+      <div className="topics-list">
+        <h2>Cached Topics</h2>
+        {topics.length > 0 ? (
+          <ul>
+            {topics.map((topic, index) => (
+              <li key={index}>{topic}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No cached topics available.</p>
+        )}
+      </div>
     </div>
   );
 };
