@@ -36,13 +36,14 @@ def prompt(user_input: str) -> str:
     return f"Explain this to me like I'm 5: {topic}"
 
 
-async def explain_like_im_five(topic: str) -> str:
+async def explain_like_im_five(topic: str, org_id: str) -> str:
     try:
+        logger.info(f"Received topic to explain: {topic} for org_id: {org_id}")
         response = await llm.ainvoke([HumanMessage(content=prompt(topic))])
         safe_output = sanitize_string(response.content)
         if safe_output:
             logger.info(f"Storing topic in cache: {topic}")
-            await store_topic_in_cache(topic)  # Uncomment if using async cache
+            await store_topic_in_cache(topic, org_id)  # Uncomment if using async cache
         else:
             logger.warning("LLM returned an empty response, not storing in cache.")
 

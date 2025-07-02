@@ -1,6 +1,6 @@
 import os
 import logging
-from fastapi import HTTPException
+from fastapi import HTTPException, Header
 from cachetools import TTLCache
 from stytch import B2BClient
 from stytch.core.response_base import StytchError
@@ -26,6 +26,29 @@ client = B2BClient(
 )
 
 token_cache = TTLCache(maxsize=500, ttl=300)
+
+
+def get_current_user(authorization: str = Header(...), auth_check=None):
+    token = authorization.removeprefix("Bearer ").strip()
+    try:
+        user_data = verify_session_token(token, auth_check)
+        return user_data
+    except Exception as e:
+        logger.error(f"Auth failed: {e}")
+        raise HTTPException(status_code=401, detail="Auth error")
+
+
+def get_current_org_id(authorization: str = Header(...)):
+    token = authorization.removeprefix("Bearer ").strip()
+    try:
+        user_data = verify_session_token(token)
+        if not user_data or not user_data.organization:
+            logger.error("User data or organization not found in session")
+            raise HTTPException(status_code=401, detail="Auth error")
+        return user_data.organization.organization_id
+    except Exception as e:
+        logger.error(f"Auth failed: {e}")
+        raise HTTPException(status_code=401, detail="Auth error")
 
 
 def verify_session_token(token: str, auth_check=None) -> dict:

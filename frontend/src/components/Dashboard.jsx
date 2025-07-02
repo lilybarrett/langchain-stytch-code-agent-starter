@@ -30,6 +30,7 @@ export const Dashboard = () => {
       console.warn('Session token not ready, skipping fetch');
       return;
     }
+
     const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:8000';
     fetch(`${baseUrl}/cached-topics`, {
       headers: {
@@ -39,7 +40,6 @@ export const Dashboard = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log({ data });
         setRecentTopics(recentTopics.length > 0 ? recentTopics : data.topics);
       })
       .catch((error) => {

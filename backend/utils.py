@@ -10,21 +10,21 @@ def redis_client() -> redis.Redis:
     raise ValueError("REDIS_URL environment variable is not set.")
 
 
-async def store_topic_in_cache(topic: str) -> None:
+async def store_topic_in_cache(topic: str, org_id: str) -> None:
     if not topic:
         return
 
     client = redis_client()
-    cache_key = f"org:topics"
+    cache_key = f"org:{org_id}:topics"
     # Use a list to store the last 5 topics
     await client.lpush(cache_key, topic)
     await client.ltrim(cache_key, 0, 4)
     await client.expire(cache_key, 604800)
 
 
-def get_cached_topics() -> list:
+def get_cached_topics(org_id: str) -> list:
     client = redis_client()
-    cache_key = f"org:topics"
+    cache_key = f"org:{org_id}:topics"
     topics = client.lrange(cache_key, 0, -1)
     return topics if topics else []
 

@@ -5,7 +5,7 @@ export const useRecentTopics = (initialTopics = []) => {
 
   // TODO get this working again
   const addTopic = useCallback((topic) => {
-    setRecentTopics((prevTopics) => {
+    setRecentTopics((prevTopics = []) => {
       const updatedTopics = [topic, ...prevTopics].slice(0, 5); // Keep only the last 5 topics
       return updatedTopics;
     });
