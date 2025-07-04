@@ -7,6 +7,24 @@ export const adminPortalConfig = {
     AdminPortalB2BProducts.sso,
     AdminPortalB2BProducts.oauthGoogle,
   ],
+  getRoleDescription: (role) => {
+    if (role.role_id == 'stytch_admin') {
+      return 'Able to manage settings, members, and search topics';
+    } else if (role.role_id == 'stytch_member') {
+      return 'Able to view settings, members, and recent search topics, but cannot search topics of their own or add new members';
+    } else {
+      return role.description;
+    }
+  },
+  getRoleDisplayName: (role) => {
+    if (role.role_id == 'stytch_admin') {
+      return 'Admin';
+    } else if (role.role_id == 'stytch_member') {
+      return 'Member';
+    } else {
+      return role.role_id;
+    }
+  },
 };
 
 export const discoveryConfig = {
