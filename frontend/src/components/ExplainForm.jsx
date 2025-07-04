@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './form.css';
 
-export const ExplainForm = () => {
+const ExplainForm = () => {
   const [topic, setTopic] = useState('');
   const [response, setResponse] = useState('');
 
@@ -40,3 +40,5 @@ export const ExplainForm = () => {
     </div>
   );
 };
+
+export default ExplainForm;

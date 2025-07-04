@@ -1,4 +1,4 @@
-import { ExplainForm } from './ExplainForm';
+import ExplainForm from './ExplainForm';
 
 export const Dashboard = () => {
   return (
