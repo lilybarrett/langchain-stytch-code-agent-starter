@@ -13,7 +13,7 @@ from agent import explain_like_im_five
 from auth import get_current_user, get_current_org_id
 from pydantic import BaseModel
 
-ENV_FILE = os.getenv("ENV_FILE", ".env.local")
+ENV_FILE = os.getenv("APP_ENV", ".env.local")
 load_dotenv(dotenv_path=ENV_FILE)
 
 logging.basicConfig(level=logging.INFO)
