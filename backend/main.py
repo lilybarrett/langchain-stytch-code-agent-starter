@@ -10,7 +10,7 @@ from fastapi_limiter.depends import RateLimiter
 from contextlib import asynccontextmanager
 import redis.asyncio as redis
 from agent import explain_like_im_five
-from auth import get_current_user, get_current_org, can_user_create_topic
+from auth import get_current_user_and_organization, can_user_create_topic
 from pydantic import BaseModel
 
 ENV_FILE = os.getenv("APP_ENV", ".env.local")
@@ -52,10 +52,10 @@ app.add_middleware(
 @app.post("/explain", dependencies=[Depends(RateLimiter(times=5, seconds=60))])
 async def explain(
     request: ExplainRequest,
-    user=Depends(get_current_user),
+    user_and_org=Depends(get_current_user_and_organization),
     can_user_create_topic=Depends(can_user_create_topic),
-    org=Depends(get_current_org),
 ):
+    user, org = user_and_org
     logger.info(f"Received request to explain: {request.topic}")
     if not user or not can_user_create_topic:
         logger.warning("Unauthorized access attempt")
@@ -67,7 +67,8 @@ async def explain(
 
 
 @app.get("/cached-topics")
-async def get_cached_topics(org=Depends(get_current_org)):
+async def get_cached_topics(user_and_org=Depends(get_current_user_and_organization)):
+    user, org = user_and_org
     client = redis.from_url(
         os.getenv("REDIS_URL"), encoding="utf8", decode_responses=True
     )
