@@ -28,6 +28,7 @@ const ExplainForm = () => {
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit}>
+        <label htmlFor="topic">Topic:</label>
         <input
           type="text"
           placeholder="Enter a topic..."

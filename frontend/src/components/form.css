@@ -1,6 +1,8 @@
 /* In styles.css or a <style> block */
 
 .form-container {
+  width: 100%;
+  max-width: 600px;
   margin: 4rem auto;
   padding: 2rem;
   background-color: #f9fafb;
@@ -12,9 +14,6 @@
 form {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  max-width: 600px;
   gap: 1rem;
 }
 
@@ -56,4 +55,17 @@ button:hover {
   font-size: 1.05rem;
   color: #1e293b;
   min-height: 3rem;
+}
+
+/* disabled styling */
+button:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+input[type="text"]:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  outline: none;
+  border-color: #d1d5db;
 }
