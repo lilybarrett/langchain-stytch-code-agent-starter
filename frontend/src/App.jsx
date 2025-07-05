@@ -16,7 +16,7 @@ export const App = () => {
     session && ['/dashboard', '/members', '/settings'].includes(location.pathname);
 
   return (
-    <div className={showSidebar ? 'authenticated-app-container' : 'unauthenticated-app-container'}>
+    <div className={showSidebar ? 'in-app-container' : 'login-container'}>
       {showSidebar && <SideNav />}
       <div>
         <Routes>
