@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 # Ensure that the topic is a string and is required
-class ExplainRequest(BaseModel):
+class ExplainRequestBody(BaseModel):
     topic: str
 
 
@@ -51,7 +51,7 @@ app.add_middleware(
 
 @app.post("/explain", dependencies=[Depends(RateLimiter(times=5, seconds=60))])
 async def explain(
-    request: ExplainRequest,
+    request: ExplainRequestBody,
     user_and_org=Depends(get_current_user_and_organization),
     can_user_create_topic=Depends(can_user_create_topic),
 ):
