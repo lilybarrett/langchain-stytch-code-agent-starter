@@ -31,7 +31,7 @@ def can_user_create_topic(authorization: str = Header(...)):
     token = authorization.removeprefix("Bearer ").strip()
     try:
         data = verify_session_token(token, auth_check=can_user_create_topic_auth_check)
-        if not data or not data.organization:
+        if not data.member or not data.organization:
             logger.error("User or organization not found in session")
             raise HTTPException(status_code=401, detail="Auth error")
         return True
@@ -44,10 +44,10 @@ def get_current_user_and_organization(authorization: str = Header(...)):
     token = authorization.removeprefix("Bearer ").strip()
     try:
         data = verify_session_token(token)
-        if not data or not data.organization:
+        if not data.member or not data.organization:
             logger.error("User or organization not found in session")
             raise HTTPException(status_code=401, detail="Auth error")
-        return data, data.organization
+        return data.member, data.organization
     except Exception as e:
         logger.error(f"Auth failed: {e}")
         raise HTTPException(status_code=401, detail="Auth error")
