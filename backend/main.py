@@ -10,7 +10,7 @@ from fastapi_limiter.depends import RateLimiter
 from contextlib import asynccontextmanager
 import redis.asyncio as redis
 from agent import explain_like_im_five
-from auth import get_current_user, get_current_org_id
+from auth import get_current_user, get_current_org, can_user_create_topic
 from pydantic import BaseModel
 
 ENV_FILE = os.getenv("APP_ENV", ".env.local")
@@ -52,23 +52,24 @@ app.add_middleware(
 @app.post("/explain", dependencies=[Depends(RateLimiter(times=5, seconds=60))])
 async def explain(
     request: ExplainRequest,
-    user_data=Depends(get_current_user),
-    org_id=Depends(get_current_org_id),
+    user=Depends(get_current_user),
+    can_user_create_topic=Depends(can_user_create_topic),
+    org=Depends(get_current_org),
 ):
     logger.info(f"Received request to explain: {request.topic}")
-    if not user_data:
+    if not user or not can_user_create_topic:
         logger.warning("Unauthorized access attempt")
         raise HTTPException(status_code=401, detail="Unauthorized")
     logger.info("Calling agent...")
-    response = await explain_like_im_five(request.topic, org_id=org_id)
+    response = await explain_like_im_five(request.topic, org_id=org.organization_id)
     logger.info("Agent returned response")
     return {"response": response}
 
 
 @app.get("/cached-topics")
-async def get_cached_topics(org_id=Depends(get_current_org_id)):
+async def get_cached_topics(org=Depends(get_current_org)):
     client = redis.from_url(
         os.getenv("REDIS_URL"), encoding="utf8", decode_responses=True
     )
-    topics = await client.lrange(f"org:{org_id}:topics", 0, -1)
+    topics = await client.lrange(f"org:{org.organization_id}:topics", 0, -1)
     return {"topics": topics}
