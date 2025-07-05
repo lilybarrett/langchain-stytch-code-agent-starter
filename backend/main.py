@@ -69,6 +69,9 @@ async def explain(
 @app.get("/cached-topics")
 async def get_cached_topics(user_and_org=Depends(get_current_user_and_organization)):
     user, org = user_and_org
+    if not user or not org:
+        logger.warning("Unauthorized access attempt to cached topics")
+        raise HTTPException(status_code=401, detail="Unauthorized")
     client = redis.from_url(
         os.getenv("REDIS_URL"), encoding="utf8", decode_responses=True
     )
