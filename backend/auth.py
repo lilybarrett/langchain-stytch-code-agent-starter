@@ -10,12 +10,6 @@ STYTCH_SECRET = os.getenv("STYTCH_SECRET")
 APP_ENV = os.getenv("APP_ENV", "local")
 ENVIRONMENT = "test" if APP_ENV != "production" else "live"
 
-missing_vars = [
-    var for var in ["STYTCH_PROJECT_ID", "STYTCH_SECRET"] if not os.getenv(var)
-]
-if missing_vars:
-    raise RuntimeError(f"Missing required env vars: {', '.join(missing_vars)}")
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
