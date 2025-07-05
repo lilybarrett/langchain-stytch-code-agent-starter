@@ -20,6 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# Ensure that the topic is a string and is required
 class ExplainRequest(BaseModel):
     topic: str
 
